@@ -8,6 +8,7 @@ import { validate } from './config/env.validation';
 import { JwtAuthGuard } from './common/guards';
 import { EventsModule } from './events/events.module';
 import { InvitationsModule } from './invitations/invitations.module';
+import { AvailabilityModule } from './availability/availability.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { InvitationsModule } from './invitations/invitations.module';
     UsersModule,
     EventsModule,
     InvitationsModule,
+    AvailabilityModule,
   ],
   providers: [
     {
