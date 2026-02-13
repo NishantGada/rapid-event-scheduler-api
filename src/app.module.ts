@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { validate } from './config/env.validation';
 import { JwtAuthGuard } from './common/guards';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { JwtAuthGuard } from './common/guards';
     PrismaModule,
     AuthModule,
     UsersModule,
+    EventsModule,
   ],
   providers: [
     {
