@@ -1,98 +1,145 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Event Scheduler API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A production-grade event scheduling REST API built with NestJS, demonstrating advanced architectural patterns and industry-standard practices.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Tech Stack
 
-## Description
+- **Framework:** NestJS (TypeScript)
+- **Database:** PostgreSQL (Supabase)
+- **ORM:** Prisma
+- **Authentication:** JWT with refresh tokens (Passport.js)
+- **Documentation:** Swagger/OpenAPI
+- **Validation:** class-validator + class-transformer
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Advanced NestJS Patterns
 
-## Project setup
+- **Custom Decorators** — `@CurrentUser()`, `@Public()`
+- **Guards** — Global JWT auth guard, refresh token guard
+- **Interceptors** — Response transformation for consistent API format
+- **Exception Filters** — Global error handling with uniform error responses
+- **Pipes** — Global validation, `ParseUUIDPipe` for param validation
+- **Middleware** — HTTP request logging with response timing
+- **Event-Driven Architecture** — Decoupled notifications via EventEmitter
+- **Global Modules** — Prisma and Config available app-wide
 
-```bash
-$ npm install
+## API Modules
+
+| Module | Endpoints | Description |
+|---|---|---|
+| **Auth** | `POST /register`, `POST /login`, `POST /refresh` | JWT authentication with refresh token rotation |
+| **Users** | `GET /me`, `PATCH /me` | Profile management with timezone support |
+| **Events** | Full CRUD | Event management with visibility controls (public/private) |
+| **Invitations** | `POST /`, `GET /me`, `PATCH /:id/rsvp` | Invite users to events, RSVP tracking |
+| **Availability** | `POST /`, `GET /me`, `GET /check/:userId`, `DELETE /:id` | Weekly availability slots with conflict detection |
+| **Health** | `GET /` | Database connectivity and uptime monitoring |
+
+## Project Structure
+
+```
+src/
+├── auth/                 # Authentication (JWT + refresh tokens)
+│   ├── dto/
+│   └── strategy/         # Passport JWT strategies
+├── availability/         # Availability slots & conflict checking
+│   └── dto/
+├── common/               # Shared utilities
+│   ├── decorators/       # @CurrentUser, @Public
+│   ├── filters/          # Global exception filter
+│   ├── guards/           # JWT auth guard, refresh guard
+│   ├── interceptors/     # Response transformation
+│   └── middleware/        # HTTP logger
+├── config/               # Environment validation
+├── events/               # Event CRUD with access control
+│   └── dto/
+├── health/               # Health check endpoint
+├── invitations/          # Invitation & RSVP management
+│   └── dto/
+├── notifications/        # Event-driven notification system
+│   └── events/           # Event payload classes
+├── prisma/               # Database service (global)
+├── users/                # User profile management
+│   └── dto/
+├── app.module.ts
+└── main.ts
 ```
 
-## Compile and run the project
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v18+)
+- PostgreSQL database (local or hosted)
+
+### Installation
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+git clone <repository-url>
+cd event-scheduler-api
+npm install
 ```
 
-## Run tests
+### Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+DATABASE_URL="postgresql://user:password@host:port/database"
+JWT_SECRET="your-jwt-secret"
+JWT_REFRESH_SECRET="your-refresh-secret"
+```
+
+### Database Setup
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npx prisma migrate dev --name init
+npx prisma generate
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### Running the App
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# Development
+npm run start:dev
+
+# Production
+npm run build
+npm run start:prod
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### API Documentation
 
-## Resources
+Once the app is running, visit: `http://localhost:3000/api/docs`
 
-Check out a few resources that may come in handy when working with NestJS:
+## API Response Format
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+All responses follow a consistent format:
 
-## Support
+**Success:**
+```json
+{
+  "success": true,
+  "data": { ... },
+  "timestamp": "2026-02-13T20:59:40.301Z"
+}
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+**Error:**
+```json
+{
+  "success": false,
+  "error": {
+    "statusCode": 400,
+    "message": "Validation failed"
+  },
+  "timestamp": "2026-02-13T20:59:40.301Z"
+}
+```
 
-## Stay in touch
+## Key Design Decisions
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- **Secure by default** — Global JWT guard protects all routes; public routes explicitly opt out with `@Public()`
+- **API versioning** — All routes prefixed with `/api/v1` for future compatibility
+- **Event-driven notifications** — Decoupled from business logic via EventEmitter pattern
+- **Consistent responses** — Interceptors and filters ensure uniform API contract
+- **Authorization checks** — Resource ownership validated at the service layer
+- **Input validation** — DTOs with class-validator prevent malformed data at the controller layer
