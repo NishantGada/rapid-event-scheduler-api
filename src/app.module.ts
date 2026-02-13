@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { APP_GUARD } from '@nestjs/core';
@@ -9,9 +9,10 @@ import { EventsModule } from './events/events.module';
 import { InvitationsModule } from './invitations/invitations.module';
 import { AvailabilityModule } from './availability/availability.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { HealthModule } from './health/health.module';
 import { validate } from './config/env.validation';
 import { JwtAuthGuard } from './common/guards';
-import { HealthModule } from './health/health.module';
+import { LoggerMiddleware } from './common/middleware/logger.middleware';
 
 @Module({
   imports: [
@@ -36,4 +37,8 @@ import { HealthModule } from './health/health.module';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}
