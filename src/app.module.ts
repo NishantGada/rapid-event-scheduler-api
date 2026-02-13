@@ -11,6 +11,7 @@ import { AvailabilityModule } from './availability/availability.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { validate } from './config/env.validation';
 import { JwtAuthGuard } from './common/guards';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { JwtAuthGuard } from './common/guards';
     InvitationsModule,
     AvailabilityModule,
     NotificationsModule,
+    HealthModule,
   ],
   providers: [
     {
