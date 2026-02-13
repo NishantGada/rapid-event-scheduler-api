@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 import { validate } from './config/env.validation';
 import { JwtAuthGuard } from './common/guards';
 
@@ -14,6 +15,7 @@ import { JwtAuthGuard } from './common/guards';
     }),
     PrismaModule,
     AuthModule,
+    UsersModule,
   ],
   providers: [
     {
