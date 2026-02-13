@@ -7,10 +7,18 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateInvitationDto, UpdateInvitationDto } from './dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import {
+  InvitationCreatedEvent,
+  RsvpUpdatedEvent,
+} from '../notifications/events';
 
 @Injectable()
 export class InvitationsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly eventEmitter: EventEmitter2,
+  ) { }
 
   async create(userId: string, dto: CreateInvitationDto) {
     const event = await this.prisma.event.findUnique({
@@ -61,6 +69,21 @@ export class InvitationsService {
       },
     });
 
+    const organizer = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    this.eventEmitter.emit(
+      'invitation.created',
+      new InvitationCreatedEvent(
+        invitee.email,
+        invitee.firstName,
+        event.title,
+        event.startTime,
+        organizer!.firstName + ' ' + organizer!.lastName,
+      ),
+    );
+
     return invitation;
   }
 
@@ -99,6 +122,21 @@ export class InvitationsService {
         invitee: { select: this.userSelect },
       },
     });
+
+    const event = await this.prisma.event.findUnique({
+      where: { id: invitation.eventId },
+      include: { organizer: true },
+    });
+
+    this.eventEmitter.emit(
+      'rsvp.updated',
+      new RsvpUpdatedEvent(
+        event!.organizer.email,
+        updated.invitee.firstName + ' ' + updated.invitee.lastName,
+        event!.title,
+        dto.status,
+      ),
+    );
 
     return updated;
   }
